@@ -1,13 +1,17 @@
 /*calculator logic. R Selkowitz, Jan 2023*/
 
-let currentEntry = null; /*a string*/
-let runningTotal = ""; /* and integer*/
+let currentEntry = "0"
+let runningTotal = null; /* and integer*/
 let operation = null;
+let hasDecimal = false;
 
+/*set up display*/
 const mainOutputDisplay = document.querySelector('#mainOutput');
 const rightOutputDisplay = document.querySelector('#rightDisplay');
 const leftOutputDisplay = document.querySelector('#leftDisplay');
+
 updateDisplay();
+
 /*add event clicks for all buttons*/
 
 const button1 = document.querySelector('#btn1');
@@ -31,22 +35,62 @@ button9.addEventListener('click', () =>{digitEntry(9)});
 const button0 = document.querySelector('#btn0');
 button0.addEventListener('click', () =>{digitEntry(0)});
 
-const signButton = document.querySelector('#signBtn');
-signButton.addEventListener('click',() => {changeSign()});
+const decimalButton = document.querySelector('#decimalBtn');
+decimalButton.addEventListener('click', () =>{addDecimal();});
 
-const plusButton = document.querySelector('#addBtn');
-plusButton.addEventListener('click', () =>{chooseOperator("+")});
+const signButton = document.querySelector('#signBtn');
+signButton.addEventListener('click',() => {
+    changeSign();});
+
+const backButton = document.querySelector('#backBtn');
+    backButton.addEventListener('click', () =>{backSpace();});
+    
+
+const addButton = document.querySelector('#addBtn');
+addButton.addEventListener('click', () =>{
+    chooseOperator("+");});
+const subtractButton = document.querySelector('#subtractBtn');
+subtractButton.addEventListener('click', () =>{
+    chooseOperator("-");});
+const multiplyButton = document.querySelector('#multiplyBtn');
+multiplyButton.addEventListener('click', () =>{
+    chooseOperator("*");});
+const divideButton = document.querySelector('#divideBtn');
+divideButton.addEventListener('click', () =>{
+    chooseOperator("/");});
 
 const equalsButton = document.querySelector('#equalsBtn');
 equalsButton.addEventListener('click', ()=>{equals()});
 
+const allClearButton = document.querySelector('#allClearBtn');
+allClearButton.addEventListener('click', ()=>{allClear()});
+
+const clearButton = document.querySelector('#clearBtn');
+clearButton.addEventListener('click', ()=>{clearCurrentEntry()});
+
+function clearCurrentEntry(){
+    currentEntry = "0";
+    hasDecimal = false;
+    updateDisplay();
+    return;
+}
+
+function allClear(){
+    runningTotal = null;
+    clearCurrentEntry();
+    operation = null;
+    updateDisplay();
+    return;
+}
+
 function digitEntry(digit){
     /*code to add the next digit or decimal point to the string*/
-    if (currentEntry == null){
+    if (currentEntry == "0"){
         currentEntry = String(digit);
-    }else{
-    currentEntry = currentEntry + String(digit);
+        updateDisplay();
+        return;
     }
+    currentEntry = currentEntry + String(digit);
     updateDisplay();
     return;
 }
@@ -54,63 +98,76 @@ function digitEntry(digit){
 function changeSign() {
     if(currentEntry.slice(0,1) == "-"){
         currentEntry = currentEntry.slice(1);
-    } else {
+        updateDisplay();
+        return;}
+
         currentEntry = "-" + currentEntry;
-    }
-    updateDisplay();
-    
+        updateDisplay();
+        return;
 }
 function chooseOperator(operator) {
-    if (operation == null){
-        runningTotal = parseFloat(currentEntry);
-        currentEntry = null;
-        operation = operator; 
-        updateDisplay();
-    }
-}
-    /*code to move current entry into the running total 
     
-    if current is null, convert to zero in all cases. there is always
-    a value of current this way
+    if (currentEntry == "0" && runningTotal == null){
+        updateDisplay();
+        return;} 
 
-    case 1: no total, no operator, convert current to int and move, 
-    set operator and wait for second number
-    case 2: yes total, no operator, set operator and wait
-    case 3: yes total, yes operator: convert current, carry out 
-    set operation, place in total, and set operator
-    case 4: no total, yes operator: should not be possible*/
-
+    if (runningTotal == null){
+        runningTotal = parseFloat(currentEntry);
+        currentEntry = "0"
+        hasDecimal = false;;
+        operation = operator;
+        updateDisplay(); 
+        return;}
+    operation = operator;
+        updateDisplay();
+    return;
+    }
+    
 
 function equals () {
-    alert("Let's do this thing!")
-    if(operation == null){
-        runningTotal = parseFloat(currentEntry);
-        currentEntry = null;
-        updateDisplay();
+  
+    if(operation == null || runningTotal == null){     
         return;
     }
-    else {
-        currentEntry = calculateAnswer();
-        runningTotal = null;
-        operation = null;
-        updateDisplay();
-        return;
+    runningTotal = calculateAnswer();
+    currentEntry = "0"
+    hasDecimal = false;;
+    operation = null;
+    updateDisplay();
+    mainOutputDisplay.textContent = runningTotal;   
+    
+    return;
 }
+function backSpace(){
+    if (currentEntry == "0"){return;}
+    if (currentEntry.slice(-1) == "."){hasDecimal = false;}
+    currentEntry = currentEntry.slice(0,-1);
+    updateDisplay();
 }
+function addDecimal(){
+    if (currentEntry == "0"){return;}
+    if (hasDecimal == false ){
+        digitEntry(".");
+        hasDecimal = true;}
+}
+
 function updateDisplay () {
     mainOutputDisplay.textContent = currentEntry;
     rightOutputDisplay.textContent = operation;
     leftOutputDisplay.textContent = runningTotal;
 }
 function calculateAnswer(){
-    if(operation == "+"){
-        return runningTotal+ parseFloat(currentEntry);
-    }else if (operation == "-"){
-        return runningTotal - parseFloat(currentEntry);
-    }else if (operation == "/"){
-        return runningTotal / parseFloat(currentEntry);/*can't catch div 0 */
-    }else if (operation == "*"){
-        return runningTotal * parseFloat(currentEntry);
+    if(operation == null || runningTotal == null){
+        return(runningTotal);
+    }
+    if(operation == "/" && parseFloat(currentEntry) == "0"){
+        alert("Divide By Zero Error - enter a new operator and value!");
+        return (runningTotal);
+    }
+    if(operation == "+"){return (runningTotal + parseFloat(currentEntry));}
+    if (operation == "-"){return (runningTotal - parseFloat(currentEntry));}
+    if (operation == "/"){return (runningTotal / parseFloat(currentEntry));}/*can't catch div 0 */
+    if (operation == "*"){return (runningTotal * parseFloat(currentEntry));
     }
 
 }
