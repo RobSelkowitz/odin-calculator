@@ -12,8 +12,14 @@ const leftOutputDisplay = document.querySelector('#leftDisplay');
 
 updateDisplay();
 
-/*add event clicks for all buttons*/
+for (let i=0; i<10; i++){
+    const buttoni = document.querySelector('#btn'+i);
+buttoni.addEventListener('click', () =>{digitEntry(i)});
 
+}
+
+/*add event clicks for all buttons*/
+/*number entry buttons
 const button1 = document.querySelector('#btn1');
 button1.addEventListener('click', () =>{digitEntry(1)});
 const button2 = document.querySelector('#btn2');
@@ -34,7 +40,7 @@ const button9 = document.querySelector('#btn9');
 button9.addEventListener('click', () =>{digitEntry(9)});
 const button0 = document.querySelector('#btn0');
 button0.addEventListener('click', () =>{digitEntry(0)});
-
+*/
 const decimalButton = document.querySelector('#decimalBtn');
 decimalButton.addEventListener('click', () =>{addDecimal();});
 
@@ -45,7 +51,7 @@ signButton.addEventListener('click',() => {
 const backButton = document.querySelector('#backBtn');
     backButton.addEventListener('click', () =>{backSpace();});
     
-
+/* operation buttons*/
 const addButton = document.querySelector('#addBtn');
 addButton.addEventListener('click', () =>{
     chooseOperator("+");});
@@ -62,11 +68,14 @@ divideButton.addEventListener('click', () =>{
 const equalsButton = document.querySelector('#equalsBtn');
 equalsButton.addEventListener('click', ()=>{equals()});
 
+/*clear buttons*/
 const allClearButton = document.querySelector('#allClearBtn');
 allClearButton.addEventListener('click', ()=>{allClear()});
 
 const clearButton = document.querySelector('#clearBtn');
 clearButton.addEventListener('click', ()=>{clearCurrentEntry()});
+
+/*function implementations*/
 
 function clearCurrentEntry(){
     currentEntry = "0";
@@ -110,7 +119,6 @@ function chooseOperator(operator) {
     if (currentEntry == "0" && runningTotal == null){
         updateDisplay();
         return;} 
-
     if (runningTotal == null){
         runningTotal = parseFloat(currentEntry);
         currentEntry = "0"
@@ -135,7 +143,6 @@ function equals () {
     operation = null;
     updateDisplay();
     mainOutputDisplay.textContent = runningTotal;   
-    
     return;
 }
 function backSpace(){
@@ -149,6 +156,7 @@ function addDecimal(){
     if (hasDecimal == false ){
         digitEntry(".");
         hasDecimal = true;}
+    return;
 }
 
 function updateDisplay () {
